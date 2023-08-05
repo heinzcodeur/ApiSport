@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            background-color: black;
+            color: #fffcfdcb;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Jeudi soir</h1>
+    <h2></h2>
+    <script type="text/javascript">
+        console.log('coucou');
+
+        function yesterday() {
+            // Obtenir la date d'hier
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            // Obtenir les éléments de la date (jour, mois, année)
+            const day = yesterday.getDate();
+            const month = yesterday.getMonth();
+            const year = yesterday.getFullYear();
+
+            // Construire la date au format "jour mois année"
+            const formattedDate = `${day} ${month} ${year}`;
+
+            // Afficher la date dans un élément h2
+            document.querySelector('h2').innerText = formattedDate;
+
+            // Construire l'URL avec la date d'hier
+            const apiUrl = `https://allsportsapi2.p.rapidapi.com/api/matches/${day}/${month}/${year}`;
+
+            return apiUrl;
+        }
+
+        function tomorrow() {
+            // Obtenir la date d'hier
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() + 1);
+
+            // Obtenir les éléments de la date (jour, mois, année)
+            const day = yesterday.getDate();
+            const month = yesterday.getMonth();
+            const year = yesterday.getFullYear();
+
+            // Construire la date au format "jour mois année"
+            const formattedDate = `${day} ${month} ${year}`;
+
+            // Afficher la date dans un élément h2
+            document.querySelector('h2').innerText = formattedDate;
+
+            // Construire l'URL avec la date d'hier
+            const apiUrl = `https://allsportsapi2.p.rapidapi.com/api/matches/${day}/${month}/${year}`;
+
+            return apiUrl;
+        }
+
+        // URL de l'API
+
+        function today() {
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+            const day = currentDate.getDate().toString().padStart(2, '0');
+
+            const apiUrl = `https://allsportsapi2.p.rapidapi.com/api/matches/${day}/${month}/${year}`;
+
+            return apiUrl;
+        }
+
+        function getDate() {
+            let dateChoice = prompt('Enter a number:\n0 for yesterday\n1 for tomorrow\nAny other for today');
+            let date;
+
+            switch (dateChoice) {
+                case '0':
+                    date = yesterday();
+                    break;
+                case '1':
+                    date = tomorrow();
+                    break;
+                default:
+                    date = today();
+            }
+
+            console.log(date);
+            return date;
+        }
+
+        // getDate()
+
+
+        //const apiUrl = "https://allsportsapi2.p.rapidapi.com/api/matches/19/08/2023";
+        const url = "https://allsportsapi2.p.rapidapi.com/api/basketball/player/817181";
+
+        // En-têtes de la requête
+        const headers = {
+            "X-RapidAPI-Key": "50736dc75amsh7f9e578a03cb22ap1ea0e4jsn338832cda913"
+        };
+
+        let appels = 0;
+
+        async function getEvents() {
+            fetch(getDate(), { headers })
+                .then(response => {
+                    appels = response.headers.get('X-Ratelimit-Requests-Remaining');
+                    return response.json();
+                })
+                .then(data => {
+                    // Traiter les données
+                    const donnees = data.events;
+                    console.log(donnees.length - 600);
+
+                    const firstEntry = Object.entries(donnees)[0];
+                    const firstKey = firstEntry[0];
+                    const firstValue = firstEntry[1];
+                    const length = Object.keys(donnees).length;
+
+                    console.log("taille :", length);
+                    console.log("Clé :", firstKey);
+                    console.log("Valeur :", firstValue.slug);
+                    const awayScore = firstValue.awayScore.display ?? 0;
+                    const homeScore = firstValue.homeScore.display ?? 0;
+                    document.querySelector('h1').innerText = firstValue.slug + ': ' + awayScore + '-' + homeScore;
+                    console.log("Valeur :", firstValue);
+                    console.log("type :", typeof (firstValue));
+
+                    let ligue = [];
+
+                    for (let i = 0; i < donnees.length - 300; i++) {
+                        // if (donnees[i].tournament.slug === "premier-league" && donnees[i].tournament.category.slug === "england") {
+                        ligue.push(donnees[i]);
+                        // Votre code à exécuter pour chaque élément (clé, valeur) de l'objet
+                        // }
+                        // console.log(donnees[i].id);
+                        // console.log(donnees[i].slug);
+                    }
+                    for (let j = 0; j < ligue.length; j++) {
+                        // if (ligue[j].status.type != "postponed") {
+                        document.write(`<br><br><br><h3>' ${ligue[j].homeTeam.name} ${ligue[j].homeScore.display ?? 0} -  ${ligue[j].awayScore.display ?? 0} ${ligue[j].awayTeam.name} </h3>`);
+                        // }
+                    }
+                    console.log(appels);
+                })
+                .catch(error => {
+                    console.error("Une erreur s'est produite :", error);
+                });
+
+
+        }
+
+        getEvents()
+    </script>
+
+
+
+</body>
+
+</html>
